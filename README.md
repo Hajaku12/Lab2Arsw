@@ -1,4 +1,5 @@
-# Escuela Colombiana de Ingeniería
+# Escuela Colombiana de Ingen
+iería
 
 # Arquitecturas de Software – ARSW
 
@@ -54,6 +55,12 @@ Taller.
     a.  La acción de iniciar la carrera y mostrar los resultados se realiza a partir de la línea 38 de MainCanodromo.
 
     b.  Puede utilizarse el método join() de la clase Thread para sincronizar el hilo que inicia la carrera, con la finalización de los hilos de los galgos.
+        
+    - Al usar el método join() se puede ver que la ejecución de los hilos se detiene y se espera a que todos los hilos terminen para mostrar los resultados.
+    
+    ![img_3.png](img%2Fimg_3.png)
+
+    ![img_4.png](img%2Fimg_4.png)
 
 2.  Una vez corregido el problema inicial, corra la aplicación varias
     veces, e identifique las inconsistencias en los resultados de las
@@ -61,16 +68,32 @@ Taller.
     podrían salir resultados válidos, pero en otros se pueden presentar
     dichas inconsistencias). A partir de esto, identifique las regiones
     críticas () del programa.
-
+    
+    - Al correr la aplicación varias veces se puede ver que los resultados no son consistentes, esto se debe a que se están presentando condiciones de carrera. Las regiones críticas se pueden identificar en el método run() de la clase Galgo, ya que es en este método donde se incrementa el contador de llegada y se muestra el mensaje de llegada.
+    - Teniendo en cuenta lo anterior, se puede ver que el método run() de la clase Galgo es una región crítica, ya que es en este método donde se incrementa el contador de llegada y se muestra el mensaje de llegada.
+    ![img_5.png](img%2Fimg_5.png)
+    
 3.  Utilice un mecanismo de sincronización para garantizar que a dichas
     regiones críticas sólo acceda un hilo a la vez. Verifique los
     resultados.
+    
+    - Para solucionar el problema de las condiciones de carrera se puede usar un Lock, en este caso se usó un ReentrantLock. Al usar este Lock se puede ver que los resultados son consistentes y no se presentan condiciones de carrera.
+    
+    ![img_5.png](img%2Fimg_5.png)
 
+    - Se puede ver que al usar el Lock se evitan las condiciones de carrera y los resultados son consistentes.
 4.  Implemente las funcionalidades de pausa y continuar. Con estas,
     cuando se haga clic en ‘Stop’, todos los hilos de los galgos
     deberían dormirse, y cuando se haga clic en ‘Continue’ los mismos
     deberían despertarse y continuar con la carrera. Diseñe una solución que permita hacer esto utilizando los mecanismos de sincronización con las primitivas de los Locks provistos por el lenguaje (wait y notifyAll).
 
+    - En el `actionListener` del botón de detener, se itera sobre todos los galgos presentes en el arreglo de galgos y se establece la variable "stop" en verdadero. Esto provocará que cada galgo se detenga, utilizando el método `wait` al identificar que deben parar.
+          
+    ![img_6.png](img%2Fimg_6.png)
+
+    - En el `actionListener` del botón de continuar, se itera sobre todos los galgos presentes en el arreglo de galgos y se establece la variable "stop" en falso. Esto provocará que cada galgo se reanude, utilizando el método `notifyAll` al identificar que deben continuar.
+     
+    ![img_7.png](img%2Fimg_7.png)
 
 ## Criterios de evaluación
 

@@ -24,7 +24,7 @@ public class MainCanodromo {
 
                     @Override
                     public void actionPerformed(final ActionEvent e) {
-						//como acción, se crea un nuevo hilo que cree los hilos
+                        //como acción, se crea un nuevo hilo que cree los hilos
                         //'galgos', los pone a correr, y luego muestra los resultados.
                         //La acción del botón se realiza en un hilo aparte para evitar
                         //bloquear la interfaz gráfica.
@@ -38,8 +38,15 @@ public class MainCanodromo {
                                     galgos[i].start();
 
                                 }
-                               
-				can.winnerDialog(reg.getGanador(),reg.getUltimaPosicionAlcanzada() - 1); 
+                                for (Galgo galgo: galgos) {
+                                    try {
+                                        galgo.join();
+                                    } catch (InterruptedException ex) {
+                                        throw new RuntimeException(ex);
+                                    }
+                                }
+
+                                can.winnerDialog(reg.getGanador(),reg.getUltimaPosicionAlcanzada() - 1);
                                 System.out.println("El ganador fue:" + reg.getGanador());
                             }
                         }.start();
@@ -52,7 +59,12 @@ public class MainCanodromo {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        System.out.println("Carrera pausada!");
+                        synchronized (reg) {
+                            for (Galgo galgo : galgos){
+                                galgo.setStop(true);
+                            }
+                            System.out.println("Carrera pausada");
+                        }
                     }
                 }
         );
@@ -61,7 +73,14 @@ public class MainCanodromo {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        System.out.println("Carrera reanudada!");
+                        synchronized (reg) {
+                            for (Galgo galgo : galgos){
+                                galgo.setStop(false);
+                            }
+                            reg.notifyAll();
+                            System.out.println("Carrera reanudada");
+                        }
+
                     }
                 }
         );
